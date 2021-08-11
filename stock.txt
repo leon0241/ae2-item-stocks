@@ -1,0 +1,16 @@
+let array = [iron, gold, silver etc]
+let buffer = 5000
+let waitTime = 60 * 10
+
+while true do {
+  for i > array.length {
+    let amount = get amount from ae2 with filter array[i]
+    if amount > buffer {
+      let difference = amount - buffer
+      let craftNumber = difference / 9
+      AE2 craft array[i] craftNumber amount of times
+    }
+  }
+
+  sleep(waitTime)
+}
