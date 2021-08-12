@@ -11,6 +11,8 @@ local ae2 = component.me_interface
 local buffer = 1000
 local waitTime = 60
 
+print(sr.serialize(stockCpus, 10000))
+
 -- loop indefinitely
 while true do
   -- For each item in the item list
@@ -42,15 +44,25 @@ while true do
         -- Get craft details for the corresponding block
         local craftables = ae2.getCraftables({label=block})
 
+        print(sr.serialize(craftables, 10000))
+
         -- If there is a craft available
         if craftables.n >= 1 then
           -- set craftables to first entry in list
           craftItem = craftables[1]
 
+          local cpuArr = ae2.getCpus()
+
+          for _,k in pairs(cpuArr) do
+            if type(k) == "table" and string.find(k.name, "Ingots") ~= nil then
+              if k.busy == false then
+                local retVal = craftItem.request(blockCrafts, false, k.name)
+                print("crafted")
+                break
+              end
+            end
+          end
           -- request to craft item(s)
-          local retVal = craftItem.request(blockCrafts)
-          print(retVal)
-          print(sr.serialize(retVal, 100000))
         end
       end
     end
