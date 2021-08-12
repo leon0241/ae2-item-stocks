@@ -4,6 +4,7 @@ local sr = require("serialization")
 
 require("stocklist")
 
+component.gpu.setResolution(160, 50)
 
 local ae2 = component.me_interface
 
@@ -25,7 +26,6 @@ while true do
 
     -- If item doesn't exist then skip
     if item.n == 0 then
-
     else
       -- Amount of items stored in network
       local stockSize = item[1].size
@@ -49,11 +49,13 @@ while true do
 
           -- request to craft item(s)
           local retVal = craftItem.request(blockCrafts)
+          print(retVal)
+          print(sr.serialize(retVal, 100000))
         end
       end
     end
   end
 
   -- Wait for specified time until next cycle
-  os.sleep(waitTime)
+  os.sleep(15)
 end
