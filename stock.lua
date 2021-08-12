@@ -8,11 +8,17 @@ component.gpu.setResolution(160, 50)
 
 local ae2 = component.me_interface
 
+-- Number to autocraft to
 local buffer = 1000
+
+-- Max number before autocrafting (this means that it overcrafts
+-- and doesn't need to run again right after it crafts)
 local maxAmount = 1000
 
+-- Wait time
 local waitTime = 60
 
+-- Check if all cpus are taken up
 local queuedCrafts = false
 
 print(sr.serialize(stockCpus, 10000))
@@ -65,29 +71,34 @@ while true do
           -- set craftables to first entry in list
           craftItem = craftables[1]
 
+          -- get all cpus in network
           local cpuArr = ae2.getCpus()
-          local stockCpus = {}
 
+          -- value of a free cpu
           local freeCpu = {}
 
+          -- look through all cpus for a free cpu that's called %ingots%
           for _,k in pairs(cpuArr) do
-            -- if it's one of the ingot cpus
+            -- type and name check
             if type(k) == "table" and string.find(k.name, "Ingots") ~= nil then
-              print(k.name)
               -- check if it's unoccupiped
-              -- table.insert(stockCpus, k)
-
               if k.busy == false then
+                -- store
                 freeCpu = k
+
+                -- no need to check the other cpus
                 break
               end
             end
           end
 
+          -- If free cpu isn't empty
           if next(freeCpu) ~= nil then
+            -- Craft the items with freeCpu
             print("crafting" .. ingot)
             local retVal = craftItem.request(blockCrafts, false, freeCpu.name)
           else
+            -- Show all cpus are taken up
             print("full")
             queuedCrafts = true
           end
