@@ -5,10 +5,10 @@ itemList = {
   {"Lapis Lazuli", "Lapis Lazuli Block"},
   {"Coal", "Block of Coal"},
   {"Diamond", "Block of Diamond"},
-  {"Emerald", "Block of Emerald"}
+  {"Emerald", "Block of Emerald"},
 
 --   -- Overworld ores
---   {"Copper Ingot", "Block of Copper"},
+  {"Copper Ingot", "Block of Copper"}
 --   {"Silver Ingot", "Block of Silver"},
 --   {"Lead Ingot", "Block of Lead"},
 --   {"Zinc Ingot", "Block of Zinc"},
