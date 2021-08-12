@@ -53,11 +53,15 @@ while true do
 
           local cpuArr = ae2.getCpus()
 
+          -- for all cpus in network
           for _,k in pairs(cpuArr) do
+            -- if it's one of the ingot cpus
             if type(k) == "table" and string.find(k.name, "Ingots") ~= nil then
+              -- check if it's unoccupiped
               if k.busy == false then
+                -- crafting request with specified cpu name
                 local retVal = craftItem.request(blockCrafts, false, k.name)
-                print("crafted")
+                -- break out of loop
                 break
               end
             end
