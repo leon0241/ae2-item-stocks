@@ -3,128 +3,154 @@ local component = require("component")
 local sr = require("serialization")
 local gpu = component.gpu
 
-gpu.setResolution(73, 36)
+gpu.setResolution(80, 40)
 
 local w, h = gpu.getResolution()
 
 local ae2 = component.me_interface
 
-local colours = {
+colours = {
   white = 0xFFFFFF,
   blue = 0x0051BA,
   gray = 0xD3D3D3,
   black = 0x000000,
 }
 
--- gpu.setForeground(colours.gray)
--- gpu.setBackground(0x00FF00)
-
--- gpu.fill(1, 1, 10, 10, colours.white)
-
--- local table = ae2.getCpus()
-
--- for _,k in pairs(table) do
---   if type(k) == "table" then
---     for _,a in pairs(k) do
---       print(a)
---     end
---   end
-
---   print(k)
--- end
-
-
-
--- local filter = {name="minecraft:iron_ingot"}
-
--- local items = ae2.getItemsInNetwork()
--- print(sr.serialize(items, 100000))
-
-gpu.fill(1, 1, w, h, " ") -- clears the screen
-                                                  
-
--- print("      _    _____ ____    ____  _             _         - Made by Leon")
--- print("     / \\  | ____|___ \\  / ___|| |_ ___   ___| | _____ ")
--- print("    / _ \\ |  _|   __) | \\___ \\| __/ _ \\ / __| |/ / __|")
--- print("   / ___ \\| |___ / __/   ___) | || (_) | (__|   <\\__ \\")
--- print("  /_/   \\_\\_____|_____| |____/ \\__\\___/ \\___|_|\\_\\___/")
-
-gpu.setForeground(colours.white)
-gpu.setBackground(colours.blue)
-
-gpu.fill(1, 1, w, 6, " ") -- fill top left quarter of screen
-
-gpu.set(1, 1, "      _    _____ ____    ____  _             _")
-gpu.set(1, 2, "     / \\  | ____|___ \\  / ___|| |_ ___   ___| | _____")
-gpu.set(1, 3, "    / _ \\ |  _|   __) | \\___ \\| __/ _ \\ / __| |/ / __|")
-gpu.set(1, 4, "   / ___ \\| |___ / __/   ___) | || (_) | (__|   <\\__ \\")
-gpu.set(1, 5, "  /_/   \\_\\_____|_____| |____/ \\__\\___/ \\___|_|\\_\\___/")
-
-gpu.setBackground(colours.white)
-gpu.setForeground(colours.black)
-gpu.fill(1, 7, w, (h - 6), " ")
-
-
--- Remaining time phrase
-
-local timeUntilPhrase = "Progress until next cycle"
-
- -- Remaining time bar
-local centerOffset = (w - string.len(timeUntilPhrase)) / 2 + 1
-gpu.set(centerOffset, 8, timeUntilPhrase)
-gpu.setBackground(colours.black)
-
-gpu.fill(4, 9, w - 6, 2, " ")
-
--- gpu.copy(1, 1, w/2, h/2, w/2, h/2) -- copy top left quarter of screen to lower right
--- time to 
--- next cycle
-
-local startX = 3
-local startY = 12
-
-for i = 1, 4 do
-  for i = 1, 7 do
-    -- Title
-    gpu.setBackground(colours.blue)
-    gpu.setForeground(colours.white)
-    gpu.fill(startX, startY, 9, 1, " ")
-    gpu.set(startX, startY, "Yellorium")
-
-    -- Main fill
-    gpu.setBackground(colours.gray)
-    gpu.fill(startX, startY + 1, 9, 4, " ")
-
-    -- Bottom half fill
-    gpu.setBackground(colours.white)
-    gpu.setForeground(colours.gray)
-    gpu.set(startX, startY + 5, "▀▀▀▀▀▀▀▀▀")
-
-    startX = startX + 10
-  end 
-
-  startX = 3
-  startY = startY + 6
+function setColours(foreground, background)
+  gpu.setForeground(foreground)
+  gpu.setBackground(background)
 end
 
--- gpu.setBackground(colours.gray)
--- gpu.fill(4, 13, 7, 4, " ")
+function colourBackgrounds()
+  -- Clears the screen
+  setColours(colours.white, colours.black)
+  gpu.fill(1, 1, w, h, " ")
 
--- gpu.set(3, 12, "Yellorium")
--- gpu.set(3, 13, "║       ║")
--- gpu.set(3, 14, "║       ║")
--- gpu.set(3, 15, "║       ║")
--- gpu.set(3, 16, "║       ║")
--- gpu.set(3, 17, "╚═══════╝")
+  -- Fill title background
+  setColours(colours.white, colours.blue)
+  gpu.fill(1, 1, w, 6, " ")
 
-gpu.setBackground(colours.white)
-gpu.setForeground(colours.black)
+  -- Fill Rest of page background
+  setColours(colours.black, colours.white)
+  gpu.fill(1, 7, w, (h - 6), " ")
+end
 
-while true do
-  local _,_,x,y = event.pull("touch")
-  component.gpu.set(x,y, x .. y)
-  os.sleep(1)
-  for i = 0, 3 do
-    component.gpu.set(x + i,y, " ")
+function setTitleText()
+  setColours(colours.white, colours.blue)
+
+  -- Title text
+  gpu.set(1, 1, "      _    _____ ____     ____  _             _")
+  gpu.set(1, 2, "     / \\  | ____|___ \\   / ___|| |_ ___   ___| | _____")
+  gpu.set(1, 3, "    / _ \\ |  _|   __) |  \\___ \\| __/ _ \\ / __| |/ / __|")
+  gpu.set(1, 4, "   / ___ \\| |___ / __/    ___) | || (_) | (__|   <\\__ \\")
+  gpu.set(1, 5, "  /_/   \\_\\_____|_____|  |____/ \\__\\___/ \\___|_|\\_\\___/")
+end
+
+function setRemainingTime()
+  -- Remaining time phrase
+
+  local timeUntilPhrase = "Progress until next cycle"
+
+  -- Remaining time text
+  local centerOffset = (w - string.len(timeUntilPhrase)) / 2 + 1
+  setColours(colours.black, colours.white)
+  gpu.set(centerOffset, 8, timeUntilPhrase)
+
+  -- Remaining time bar
+  gpu.setBackground(colours.black)
+  gpu.fill(4, 9, w - 6, 2, " ")
+
+end
+
+function setItemBox(startX, startY, name)
+  -- Title
+  setColours(colours.white, colours.blue)
+  gpu.fill(startX, startY, 10, 1, " ")
+
+  if string.len(name) >= 9 then
+    gpu.set(startX, startY, name)
+  else
+    gpu.set(startX, startY, " " .. name)
   end
- end
+
+  -- Main fill
+  gpu.setBackground(colours.gray)
+  gpu.fill(startX, startY + 1, 10, 4, " ")
+
+  -- Bottom half fill
+  setColours(colours.gray, colours.white)
+  gpu.set(startX, startY + 5, "▀▀▀▀▀▀▀▀▀▀")
+end
+
+function dummyText()
+  setColours(colours.black, colours.gray)
+  gpu.set(3, 17, "To craft:")
+  gpu.set(4, 18, "▗▄▄▖▗▄▄▖")
+  gpu.set(4, 19, "▐▙▄▖▐▙▟▌")
+  gpu.set(4, 20, "▐▙▟▌▗▄▟▌")
+
+
+  gpu.set(14, 17, "All good!")
+  gpu.set(15, 18, "     ▞ ")
+  gpu.set(15, 19, " ▗  ▞ ")
+  gpu.set(15, 20, "  ▚▞ ")
+
+  gpu.set(25, 17, "Loading..")
+  setColours(colours.black, colours.gray)
+  gpu.set(29, 18, "▅▅")
+  setColours(colours.gray, colours.black)
+  gpu.set(29, 19, "▶◀")
+  gpu.set(29, 20, "▃▃")
+end
+
+function textCrafting(startX, startY)
+  setColours(colours.black, colours.gray)
+  gpu.set(startX, startY + 1, "To craft:")
+  gpu.set(startX + 1, startY + 2, "▗▄▄▖▗▄▄▖")
+  gpu.set(startX + 1, startY + 3, "▐▙▄▖▐▙▟▌")
+  gpu.set(startX + 1, startY + 4, "▐▙▟▌▗▄▟▌")
+end
+
+function textNoCrafts(startX, startY)
+  gpu.set(startX, startY + 1, "All good!")
+  gpu.set(startX + 1, startY + 2, "     ▞ ")
+  gpu.set(startX + 1, startY + 2, " ▗  ▞ ")
+  gpu.set(startX + 1, startY + 2, "  ▚▞ ")
+end
+
+function textProcessing(startX, startY)
+  gpu.set(startX, startY + 1, "Loading..")
+  setColours(colours.black, colours.gray)
+  gpu.set(startX + 4, startY + 2, "▅▅")
+  setColours(colours.gray, colours.black)
+  gpu.set(startX + 4, startY + 3, "▶◀")
+  gpu.set(startX + 4, startY + 4, "▃▃")
+end
+
+-- local startX = 3
+-- local startY = 12
+
+-- for i = 1, 4 do
+--   startX = 3
+
+--   for i = 1, 7 do
+--     setItemBox(startX, startY)
+
+--     startX = startX + 10
+--   end 
+--   startY = startY + 6
+-- end
+
+-- gpu.setBackground(colours.white)
+-- gpu.setForeground(colours.black)
+
+function pollInputs()
+  while true do
+    local _,_,x,y = event.pull("touch")
+    component.gpu.set(x,y, x .. y)
+    os.sleep(1)
+    for i = 0, 3 do
+      component.gpu.set(x + i,y, " ")
+    end
+  end
+end

@@ -1,10 +1,10 @@
 local event = require("event")
 local component = require("component")
 local sr = require("serialization")
+local gpu = component.gpu
 
 require("stocklist")
-
-component.gpu.setResolution(160, 50)
+require("gui")
 
 local ae2 = component.me_interface
 
@@ -21,7 +21,20 @@ local waitTime = 60
 -- Check if all cpus are taken up
 local queuedCrafts = false
 
-print(sr.serialize(stockCpus, 10000))
+colourBackgrounds()
+setTitleText()
+setRemainingTime()
+
+
+for _,k in pairs(itemListGui) do
+  local name = k[1]
+  local startX = k[2]
+  local startY = k[3]
+
+  setItemBox(startX, startY, name)
+end
+
+dummyText()
 
 -- loop indefinitely
 while true do
@@ -32,7 +45,7 @@ while true do
 
     -- if the previous entry was already full then this one will also be full
     if queuedCrafts == true then
-      print("break out of loop")
+      -- print("break out of loop")
       waitTime = 30
       break
     end
@@ -95,23 +108,21 @@ while true do
           -- If free cpu isn't empty
           if next(freeCpu) ~= nil then
             -- Craft the items with freeCpu
-            print("crafting" .. ingot)
             local retVal = craftItem.request(blockCrafts, false, freeCpu.name)
           else
             -- Show all cpus are taken up
-            print("full")
             queuedCrafts = true
           end
-
-          -- if type(result) == "boolean" then
-          --   queuedCrafts = true
-          -- end
         end
       end
     end
   end
 
   -- Wait for specified time until next cycle
-  print(waitTime)
-  os.sleep(waitTime)
+  -- print(waitTime)
+  for i = 0, waitTime do
+    remainingTime = waitTime - i
+
+    os.sleep(1)
+  end
 end
