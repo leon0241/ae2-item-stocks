@@ -23,7 +23,7 @@ local queuedCrafts = false
 
 colourBackgrounds()
 setTitleText()
-setRemainingTime()
+statusInformation()
 
 
 for _,k in pairs(itemListGui) do

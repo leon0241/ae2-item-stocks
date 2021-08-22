@@ -62,6 +62,42 @@ function setRemainingTime()
 
 end
 
+function statusInformation()
+  setColours(colours.white, colours.blue)
+  gpu.fill(3, 8, 37, 1, " ")
+  gpu.fill(42, 8, 37, 1, " ")
+
+  gpu.set(4, 8, "Time remaining")
+  gpu.set(43, 8, "Free Crafting CPU cores")
+
+  setColours(colours.black, colours.gray)
+  gpu.fill(3, 9, 37, 6, " ") --76
+  gpu.fill(42, 9, 37, 6, " ")
+
+  gpu.set(4, 10, "Queued Crafts: Yes")
+  gpu.set(4, 11, "Time until next cycle: 69")
+  setColours(colours.white, colours.black)
+  gpu.fill(4, 12, 35, 2, " ")
+
+  setColours(colours.black, colours.gray)
+  local xValue = 43
+  local yValue = 10
+  -- gpu.set(43, 10, "1: Yes")
+  -- gpu.set(52, 10, "1: Yes")
+  -- gpu.set(61, 11, "1: Yes")
+  -- gpu.set(70, 12, "1: Yes")
+
+  for i = 1, 2 do
+    xValue = 43
+    for i = 1, 4 do
+      gpu.set(xValue, yValue, "1: Yes")
+      xValue = xValue + 9
+    end
+
+    yValue = yValue + 3
+  end
+end
+
 function setItemBox(startX, startY, name)
   -- Title
   setColours(colours.white, colours.blue)
@@ -96,11 +132,15 @@ function dummyText()
   gpu.set(15, 20, "  ▚▞ ")
 
   gpu.set(25, 17, "Loading..")
-  setColours(colours.black, colours.gray)
-  gpu.set(29, 18, "▅▅")
-  setColours(colours.gray, colours.black)
-  gpu.set(29, 19, "▶◀")
-  gpu.set(29, 20, "▃▃")
+  -- setColours(colours.black, colours.gray)
+  -- gpu.set(29, 18, "▅▅")
+  -- setColours(colours.gray, colours.black)
+  -- gpu.set(29, 19, "▶◀")
+  -- gpu.set(29, 20, "▃▃")
+
+  gpu.set(28, 18, "▗▖▗▖")
+  gpu.set(28, 19, "▐▌▐▌")
+  gpu.set(28, 20, "▝▘▝▘")
 end
 
 function textCrafting(startX, startY)
@@ -112,6 +152,7 @@ function textCrafting(startX, startY)
 end
 
 function textNoCrafts(startX, startY)
+  setColours(colours.black, colours.gray)
   gpu.set(startX, startY + 1, "All good!")
   gpu.set(startX + 1, startY + 2, "     ▞ ")
   gpu.set(startX + 1, startY + 2, " ▗  ▞ ")
@@ -119,12 +160,27 @@ function textNoCrafts(startX, startY)
 end
 
 function textProcessing(startX, startY)
-  gpu.set(startX, startY + 1, "Loading..")
   setColours(colours.black, colours.gray)
+  gpu.set(startX, startY + 1, "Loading..")
   gpu.set(startX + 4, startY + 2, "▅▅")
   setColours(colours.gray, colours.black)
   gpu.set(startX + 4, startY + 3, "▶◀")
   gpu.set(startX + 4, startY + 4, "▃▃")
+end
+
+function textOnHold(startX, startY)
+  setColours(colours.black, colours.gray)
+  gpu.set(startX, startY + 1, "Queued...")
+  gpu.set(startX + 3, 18, "▗▖▗▖")
+  gpu.set(startX + 3, 19, "▐▌▐▌")
+  gpu.set(startX + 3, 20, "▝▘▝▘")
+end
+
+-- type, value
+function changeTextProcessing(x, y)
+  if x == queuedCrafts then
+    
+  end
 end
 
 -- local startX = 3
