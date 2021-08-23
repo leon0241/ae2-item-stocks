@@ -16,6 +16,8 @@ colours = {
   black = 0x000000,
 }
 
+-- cpuTextPositions = {}
+
 function setColours(foreground, background)
   gpu.setForeground(foreground)
   gpu.setBackground(background)
@@ -63,35 +65,39 @@ function setRemainingTime()
 end
 
 function statusInformation()
+  -- Fill box headers
   setColours(colours.white, colours.blue)
   gpu.fill(3, 8, 37, 1, " ")
   gpu.fill(42, 8, 37, 1, " ")
 
+  -- Box titles
   gpu.set(4, 8, "Time remaining")
   gpu.set(43, 8, "Free Crafting CPU cores")
 
+  -- Fill box contents
   setColours(colours.black, colours.gray)
   gpu.fill(3, 9, 37, 6, " ") --76
   gpu.fill(42, 9, 37, 6, " ")
 
-  gpu.set(4, 10, "Queued Crafts: Yes")
+  -- Queued Crafts and time remaining
+  gpu.set(4, 10, "Queued Crafts: No")
   gpu.set(4, 11, "Time until next cycle: 69")
   setColours(colours.white, colours.black)
   gpu.fill(4, 12, 35, 2, " ")
 
+  -- Free CPUs
   setColours(colours.black, colours.gray)
   local xValue = 43
   local yValue = 10
-  -- gpu.set(43, 10, "1: Yes")
-  -- gpu.set(52, 10, "1: Yes")
-  -- gpu.set(61, 11, "1: Yes")
-  -- gpu.set(70, 12, "1: Yes")
+  local cpuIndex = 1
 
   for i = 1, 2 do
     xValue = 43
     for i = 1, 4 do
-      gpu.set(xValue, yValue, "1: Yes")
+      gpu.set(xValue, yValue, cpuIndex .. ": Yes")
+      -- table.insert(cpuTextPositions, {xValue, yValue})
       xValue = xValue + 9
+      cpuIndex = cpuIndex + 1
     end
 
     yValue = yValue + 3
@@ -143,20 +149,46 @@ function dummyText()
   gpu.set(28, 20, "▝▘▝▘")
 end
 
-function textCrafting(startX, startY)
+function textClear(startX, startY)
+  gpu.setBackground(colours.gray)
+  gpu.fill(startX, startY + 1, 10, 4, " ")
+end
+
+function textCrafting(number, startX, startY)
   setColours(colours.black, colours.gray)
   gpu.set(startX, startY + 1, "To craft:")
-  gpu.set(startX + 1, startY + 2, "▗▄▄▖▗▄▄▖")
-  gpu.set(startX + 1, startY + 3, "▐▙▄▖▐▙▟▌")
-  gpu.set(startX + 1, startY + 4, "▐▙▟▌▗▄▟▌")
+
+  local numberString = ""
+
+  if number <= 9 then
+    numberString = "0" .. tostring(number)
+  else 
+    numberString = tostring(number)
+  end
+
+  local numberCodes = {}
+
+  for i = 1, 2 do
+    local c = string.sub(numberString, i, i)
+
+    for _, k in pairs(numbers) do
+      if c == k[1] then 
+        table.insert(numberCodes, k)
+      end
+    end
+  end
+
+  gpu.set(startX + 1, startY + 2, numberCodes[1][2] .. numberCodes[2][2])
+  gpu.set(startX + 1, startY + 3, numberCodes[1][3] .. numberCodes[2][3])
+  gpu.set(startX + 1, startY + 4, numberCodes[1][4] .. numberCodes[2][4])
 end
 
 function textNoCrafts(startX, startY)
   setColours(colours.black, colours.gray)
   gpu.set(startX, startY + 1, "All good!")
   gpu.set(startX + 1, startY + 2, "     ▞ ")
-  gpu.set(startX + 1, startY + 2, " ▗  ▞ ")
-  gpu.set(startX + 1, startY + 2, "  ▚▞ ")
+  gpu.set(startX + 1, startY + 3, " ▗  ▞ ")
+  gpu.set(startX + 1, startY + 4, "  ▚▞ ")
 end
 
 function textProcessing(startX, startY)
@@ -176,11 +208,26 @@ function textOnHold(startX, startY)
   gpu.set(startX + 3, 20, "▝▘▝▘")
 end
 
+function textNoItem(startX, startY)
+  setColours(colours.black, colours.gray)
+  gpu.set(startX, startY + 1, "No item...")
+  gpu.set(startX + 3, startY + 2, "\\ /")
+  gpu.set(startX + 3, startY + 3, " X ")
+  gpu.set(startX + 3, startY + 4, "/ \\")
+end
+
 -- type, value
-function changeTextProcessing(x, y)
-  if x == queuedCrafts then
-    
-  end
+function changeQueuedCrafts(value)
+  setColours(colours.black, colours.gray)
+  gpu.fill(19, 10, 3, 1, " ")
+  gpu.set(19, 10, value)
+end
+
+function updateTimer(timePassed, totalTime)
+  local percentageDone = timePassed / totalTime
+  local remainingTime = tostring(totalTime - timePassed)
+  gpu.fill(27, 11, 3, 1, " ")
+  gpu.set(27, 11, remainingTime)
 end
 
 -- local startX = 3

@@ -80,51 +80,61 @@ sevenSegment = {
 
 numbers = {
   zero = {
+    "0",
     sevenSegment.topFull,
     sevenSegment.segmentOnlyLR,
     sevenSegment.segmentLR
   },
   one = {
+    "1",
     sevenSegment.topR,
     sevenSegment.segmentOnlyR,
     sevenSegment.segmentOnlyR
   },
   two = {
+    "2",
     sevenSegment.topFull,
     sevenSegment.segmentR,
     sevenSegment.segmentL
   },
   three = {
+    "3",
     sevenSegment.topFull,
     sevenSegment.segmentR,
     sevenSegment.segmentR
   },
   four = {
+    "4",
     sevenSegment.topLR,
     sevenSegment.segmentLR,
     sevenSegment.segmentOnlyR
   },
   five = {
+    "5",
     sevenSegment.topFull,
     sevenSegment.segmentL,
     sevenSegment.segmentR
   },
   six = {
+    "6",
     sevenSegment.topFull,
     sevenSegment.segmentL,
     sevenSegment.segmentLR
   },
   seven = {
+    "7",
     sevenSegment.topFull,
     sevenSegment.segmentOnlyR,
     sevenSegment.segmentOnlyR
   },
   eight = {
+    "8",
     sevenSegment.topFull,
     sevenSegment.segmentLR,
     sevenSegment.segmentLR
   },
   nine = {
+    "9",
     sevenSegment.topFull,
     sevenSegment.segmentLR,
     sevenSegment.segmentR

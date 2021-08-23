@@ -21,6 +21,8 @@ local waitTime = 60
 -- Check if all cpus are taken up
 local queuedCrafts = false
 
+local itemListLength = #itemList
+
 colourBackgrounds()
 setTitleText()
 statusInformation()
@@ -34,15 +36,22 @@ for _,k in pairs(itemListGui) do
   setItemBox(startX, startY, name)
 end
 
-dummyText()
+-- dummyText()
 
 -- loop indefinitely
 while true do
   queuedCrafts = false
   waitTime = 60
-  -- For each item in the item list
-  for _,k in pairs(itemList) do
 
+  for i = 1, itemListLength do
+    local item = itemListGui[i]
+    textClear(item[2], item[3])
+    textProcessing(item[2], item[3])
+  end
+
+
+  -- For each item in the item list
+  for i = 1, itemListLength do
     -- if the previous entry was already full then this one will also be full
     if queuedCrafts == true then
       -- print("break out of loop")
@@ -52,15 +61,24 @@ while true do
 
     -- K in array of format {ingot, block}
 
+    local itemNames = itemList[i]
+    local itemGui = itemListGui[i]
+
     -- Split K into ingot/block pair
-    local ingot = k[1]
-    local block = k[2]
+    local ingot = itemNames[1]
+    local block = itemNames[2]
+
+    local startX = itemGui[2]
+    local startY = itemGui[3]
+
 
     -- Get the item details of the specified ingot
     local item = ae2.getItemsInNetwork({label=ingot})
 
     -- If item doesn't exist then skip
     if item.n == 0 then
+      textClear(startX, startY)
+      textNoItem(startX, startY)
     else
       -- Amount of items stored in network
       local stockSize = item[1].size
@@ -91,13 +109,13 @@ while true do
           local freeCpu = {}
 
           -- look through all cpus for a free cpu that's called %ingots%
-          for _,k in pairs(cpuArr) do
+          for _,cpu in pairs(cpuArr) do
             -- type and name check
-            if type(k) == "table" and string.find(k.name, "Ingots") ~= nil then
+            if type(cpu) == "table" and string.find(cpu.name, "Ingots") ~= nil then
               -- check if it's unoccupiped
-              if k.busy == false then
+              if cpu.busy == false then
                 -- store
-                freeCpu = k
+                freeCpu = cpu
 
                 -- no need to check the other cpus
                 break
@@ -105,24 +123,31 @@ while true do
             end
           end
 
-          -- If free cpu isn't empty
+          -- If free cpu array isn't empty
           if next(freeCpu) ~= nil then
             -- Craft the items with freeCpu
             local retVal = craftItem.request(blockCrafts, false, freeCpu.name)
+            textClear(startX, startY)
+            textCrafting(blockCrafts, startX, startY)
           else
             -- Show all cpus are taken up
             queuedCrafts = true
+
+            textClear(startX, startY)
+            textOnHold(startX, startY)
+            changeQueuedCrafts("Yes")
           end
         end
+      else
+        textClear(startX, startY)
+        textNoCrafts(startX, startY)
       end
     end
   end
 
   -- Wait for specified time until next cycle
-  -- print(waitTime)
   for i = 0, waitTime do
-    remainingTime = waitTime - i
-
+    updateTimer(i, waitTime)
     os.sleep(1)
   end
 end
