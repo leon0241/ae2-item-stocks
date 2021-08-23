@@ -13,6 +13,7 @@ colours = {
   white = 0xFFFFFF,
   blue = 0x0051BA,
   gray = 0xD3D3D3,
+  lightGray = 0xa9a9a9,
   black = 0x000000,
 }
 
@@ -81,12 +82,12 @@ function statusInformation()
 
   -- Queued Crafts and time remaining
   gpu.set(4, 10, "Queued Crafts: No")
-  gpu.set(4, 11, "Time until next cycle: 69")
+  gpu.set(4, 11, "Time until next cycle:")
   setColours(colours.white, colours.black)
   gpu.fill(4, 12, 35, 2, " ")
 
   -- Free CPUs
-  setColours(colours.black, colours.gray)
+  setColours(colours.lightGray, colours.gray)
   local xValue = 43
   local yValue = 10
   local cpuIndex = 1
@@ -224,10 +225,16 @@ function changeQueuedCrafts(value)
 end
 
 function updateTimer(timePassed, totalTime)
+  setColours(colours.black, colours.gray)
   local percentageDone = timePassed / totalTime
   local remainingTime = tostring(totalTime - timePassed)
   gpu.fill(27, 11, 3, 1, " ")
   gpu.set(27, 11, remainingTime)
+
+  local fillInAmount = math.ceil(percentageDone * 35)
+  setColours(colours.black, colours.blue)
+  gpu.fill(4, 12, fillInAmount, 2, " ")
+
 end
 
 -- local startX = 3

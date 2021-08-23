@@ -3,6 +3,8 @@ local component = require("component")
 local sr = require("serialization")
 local gpu = component.gpu
 
+local waitTimeStatic = 30
+
 require("stocklist")
 require("gui")
 
@@ -16,7 +18,7 @@ local buffer = 1000
 local maxAmount = 1000
 
 -- Wait time
-local waitTime = 60
+local waitTime = waitTimeStatic
 
 -- Check if all cpus are taken up
 local queuedCrafts = false
@@ -41,7 +43,7 @@ end
 -- loop indefinitely
 while true do
   queuedCrafts = false
-  waitTime = 60
+  waitTime = waitTimeStatic
 
   for i = 1, itemListLength do
     local item = itemListGui[i]
@@ -55,7 +57,7 @@ while true do
     -- if the previous entry was already full then this one will also be full
     if queuedCrafts == true then
       -- print("break out of loop")
-      waitTime = 30
+      waitTime = waitTimeStatic / 2
       break
     end
 
