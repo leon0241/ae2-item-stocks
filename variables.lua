@@ -1,4 +1,54 @@
-local sr = require("serialization")
+--[[################################
+#                                  #
+#        Editable Variables        #
+#                                  #
+################################--]]
+
+-- Program Variables
+
+-- Wait time between cycles
+waitTimeStatic = 60
+
+-- Wait time multiplier for a queued cycle
+queueTimeMultiplier = 0.5
+
+-- Number to autocraft to
+buffer = 1000
+
+-- Max number before autocrafting (this means that it overcrafts
+-- and doesn't need to run again right after it crafts)
+maxAmount = 1200
+
+
+-- GUI Variables
+
+-- Screen Resolution
+screenWidth = 80
+screenHeight = 40
+
+-- Item box length (This is only the gray part of the box)
+itemBoxLength = 10
+itemBoxHeight = 4
+
+-- Number of rows and columns of boxes
+local itemBoxRows = 4
+local itemBoxColumns = 7
+
+-- Starting Co-ordinates of item boxes
+local startX = 3
+local startY = 16
+
+-- Amount to offset each axis by (Size of box + any filler space)
+local xOffset = 11
+local yOffset = 6
+
+
+--[[ 
+Item list to autocraft
+{Ingot, Block name, Shortened name}
+Shortened name is for GUI only
+Max of 28 values default
+--]]
 
 itemList = {
   -- Vanilla
@@ -31,28 +81,40 @@ itemList = {
 
   -- End ores
   {"Draconium Ingot", "Draconium Block", "Draconium"}
+
+  -- SPACE FOR 5 MORE INGOTS
 }
+
+
+--[[##################################
+#                                    #
+#        Uneditable Variables        #
+#                                    #
+##################################--]]
+
+
+-- Starting Position (Top left corner) of item boxes
+-- {Item name, X co-ordinate, Y co-ordinate}
 
 itemListGui = {}
 
+-- Index of item in GUI loop (can't use index as it's for 7x4 and not 1x28)
 local itemIndex = 1
-local startX = 3
-local startY = 16
-
-local xOffset = 11
-local yOffset = 6
 
 -- 4 rows of 7 columns
-for i = 1, 4 do
+for i = 1, itemBoxRows do
+
   -- Reset x to left hand side
   startX = 3
 
-  for i = 1, 7 do
+  for i = 1, itemBoxColumns do
     local values = {}
 
-    -- If there's a value put the name, otherwise leave empty
+    -- If it's still going through item list, put the name of the entry
     if #itemList >= itemIndex then
       values = {itemList[itemIndex][3], startX, startY}
+
+    -- Otherwise, leave the box with a blank name
     else
       values = {" ", startX, startY}
     end
@@ -60,23 +122,34 @@ for i = 1, 4 do
     table.insert(itemListGui, values)
 
     itemIndex = itemIndex + 1
+
+    -- Add offset to prepare for next square
     startX = startX + xOffset
   end
 
+  -- Add offset to prepare for next row
   startY = startY + yOffset
 end
 
-sevenSegment = {
-  topFull = "▗▄▄▖",
-  topLR = "▗▖▗▖",
-  topR = "  ▗▖",
+-- Parts of the 4x3 character (4x6 pixels) Seven Segment display 
 
-  segmentR = "▗▄▟▌",
-  segmentL = "▐▙▄▖",
-  segmentLR = "▐▙▟▌",
-  segmentOnlyLR = "▐▌▐▌",
-  segmentOnlyR = "  ▐▌"
+sevenSegment = {
+  -- Top section (has half cut off)
+  topFull = "▗▄▄▖", -- Used in 0, 2, 3, 5, 6, 7, 8, 9, 0
+  topLR = "▗▖▗▖", -- Used in 4
+  topR = "  ▗▖", -- Used in 1
+
+  -- Middle and bottom sections
+  segmentR = "▗▄▟▌", -- Used in 2, 3, 5, 9
+  segmentL = "▐▙▄▖", -- Used in 2, 5, 6
+  segmentLR = "▐▙▟▌", -- Used in 4, 6, 8, 9, 0
+  segmentOnlyLR = "▐▌▐▌", -- Used in 4, 0
+  segmentOnlyR = "  ▐▌" -- Used in 1, 7
 }
+
+-- Numbers as parts of seven segment display slices
+
+-- {Number (Can't use integer as entry name), Top, Middle, Bottom}
 
 numbers = {
   zero = {

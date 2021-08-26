@@ -4,7 +4,7 @@ local sr = require("serialization")
 local gpu = component.gpu
 
 local ae2 = component.me_interface
-require("stocklist")
+require("variables")
 require("gui")
 -- require("stocklist")
 -- require("gui")

@@ -1,34 +1,21 @@
-local event = require("event")
 local component = require("component")
 local sr = require("serialization")
-local gpu = component.gpu
 
-local waitTimeStatic = 30
-
-require("stocklist")
+require("variables")
 require("gui")
 
 local ae2 = component.me_interface
-
--- Number to autocraft to
-local buffer = 1000
-
--- Max number before autocrafting (this means that it overcrafts
--- and doesn't need to run again right after it crafts)
-local maxAmount = 1000
-
--- Wait time
-local waitTime = waitTimeStatic
 
 -- Check if all cpus are taken up
 local queuedCrafts = false
 
 local itemListLength = #itemList
 
+
+
 colourBackgrounds()
 setTitleText()
 statusInformation()
-
 
 for _,k in pairs(itemListGui) do
   local name = k[1]
@@ -38,16 +25,23 @@ for _,k in pairs(itemListGui) do
   setItemBox(startX, startY, name)
 end
 
--- dummyText()
 
 -- loop indefinitely
 while true do
+  -- Reset timer bar in GUI
+  resetTimerBar()
+
+  -- Reset queuedCrafts
   queuedCrafts = false
+
+  -- Reset time
   waitTime = waitTimeStatic
 
+  -- Initialise each item box with loading icon before doing processing
   for i = 1, itemListLength do
     local item = itemListGui[i]
-    textClear(item[2], item[3])
+
+    -- item: {Shortened Item Name, X-coord, Y-coord}
     textProcessing(item[2], item[3])
   end
 
@@ -57,19 +51,19 @@ while true do
     -- if the previous entry was already full then this one will also be full
     if queuedCrafts == true then
       -- print("break out of loop")
-      waitTime = waitTimeStatic / 2
+      waitTime = waitTimeStatic * queueTimeMultiplier
       break
     end
 
-    -- K in array of format {ingot, block}
-
+    -- Entries from main item and item GUI arrays
     local itemNames = itemList[i]
     local itemGui = itemListGui[i]
 
-    -- Split K into ingot/block pair
+    -- Information from main item array
     local ingot = itemNames[1]
     local block = itemNames[2]
 
+    -- Information from item GUI array
     local startX = itemGui[2]
     local startY = itemGui[3]
 
@@ -79,7 +73,6 @@ while true do
 
     -- If item doesn't exist then skip
     if item.n == 0 then
-      textClear(startX, startY)
       textNoItem(startX, startY)
     else
       -- Amount of items stored in network
@@ -116,7 +109,7 @@ while true do
             if type(cpu) == "table" and string.find(cpu.name, "Ingots") ~= nil then
               -- check if it's unoccupiped
               if cpu.busy == false then
-                -- store
+                -- store into freecpu var
                 freeCpu = cpu
 
                 -- no need to check the other cpus
@@ -129,19 +122,16 @@ while true do
           if next(freeCpu) ~= nil then
             -- Craft the items with freeCpu
             local retVal = craftItem.request(blockCrafts, false, freeCpu.name)
-            textClear(startX, startY)
             textCrafting(blockCrafts, startX, startY)
           else
             -- Show all cpus are taken up
             queuedCrafts = true
 
-            textClear(startX, startY)
             textOnHold(startX, startY)
             changeQueuedCrafts("Yes")
           end
         end
       else
-        textClear(startX, startY)
         textNoCrafts(startX, startY)
       end
     end
@@ -149,6 +139,7 @@ while true do
 
   -- Wait for specified time until next cycle
   for i = 0, waitTime do
+    -- Update timer GUI every second
     updateTimer(i, waitTime)
     os.sleep(1)
   end
