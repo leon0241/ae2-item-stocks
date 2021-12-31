@@ -86,7 +86,12 @@ while true do
 
         -- Ceiling always puts the calculated number below the buffer
         local blockCrafts = math.ceil(difference / 9)
-
+        
+        -- Rough estimate of how much a 16k storage can process
+        if blockCrafts > 1400 then
+          blockCrafts = 1400
+        end
+        
         -- Get craft details for the corresponding block
         local craftables = ae2.getCraftables({label=block})
 
